@@ -1,0 +1,20 @@
+{% extends 'relation/booklist.html' %}
+{% block title %}Add Book{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Add a New Book</h3>
+        </div>
+        <div class="card-body">
+            <form method="post" action="{% url 'addbook' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-success">Add Book</button>
+                <a href="{% url 'booklist' %}" class="btn btn-secondary ml-2">Back to Book List</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends 'relation/booklist.html' %}
+{% load static %}
+{% block title %}Book Detail{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">📖 {{ book.title }}</h2>
+
+    <div class="text-center mb-4">
+        {% if book.image %}
+        <img src="{{ book.image.url }}" class="img-fluid rounded shadow" alt="{{ book.title }}" style="max-height: 400px;">
+        {% else %}
+        <img src="{% static 'books.jpeg' %}" class="img-fluid rounded shadow" alt="Default Cover" style="max-height: 400px;">
+        {% endif %}
+    </div>
+
+    <div class="card mb-4 shadow">
+        <div class="card-body">
+            <h4 class="card-title">Book Information</h4>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Title:</strong> {{ book.title }}</li>
+                <li class="list-group-item"><strong>ISBN:</strong> {{ book.isbn }}</li>
+                <li class="list-group-item"><strong>Published Date:</strong> {{ book.published_date }}</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card mb-4 shadow">
+        <div class="card-body">
+            <h4 class="card-title">🏢 Publisher Information</h4>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Name:</strong> {{ book.publisher.name }}</li>
+                <li class="list-group-item"><strong>Address:</strong> {{ book.publisher.address }}</li>
+                <li class="list-group-item"><strong>City:</strong> {{ book.publisher.city }}</li>
+                <li class="list-group-item"><strong>Country:</strong> {{ book.publisher.country }}</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body">
+            <h4 class="card-title">✍️ Authors</h4>
+            <ul class="list-group list-group-flush">
+                {% for author in book.authors.all %}
+                <li class="list-group-item">
+                    {{ author.first_name }} {{ author.last_name }} ({{ author.email }})
+                </li>
+                {% empty %}
+                <li class="list-group-item">No authors listed.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="text-center">
+        <button id="payment-button" 
+        class="btn btn-lg text-white" 
+        style="background-color: #ff1493">
+    Buy with Khalti
+</button>
+    </div>
+    <a href="{% url 'booklist' %}" class="btn btn-secondary mt-4">⬅ Back to Book List</a>
+</div>
+
+ <!-- Include Khalti SDK -->
+<script src="https://khalti.com/static/khalti-checkout.js"></script>
+<script>
+    var config = {
+        publicKey: "your_public_key",  // Replace with your Khalti public key
+        productIdentity: "unique_product_id",  // Replace with a unique identifier for the product
+        productName: "Your Product Name",  // Replace with the name of your product
+        productUrl: "https://your-website.com/product-url",  // Replace with the URL of your product
+        paymentPreference: ["KHALTI", "EBANKING", "MOBILE_BANKING"],  // Payment methods you want to accept
+        eventHandler: {
+            onSuccess: function (payload) {
+                // Handle the successful payment response
+                fetch("/verify-khalti-payment/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: JSON.stringify(payload)
+                }).then(response => response.json())
+                  .then(data => {
+                      if (data.success) {
+                          alert("Payment successful!");
+                      } else {
+                          alert("Payment failed!");
+                      }
+                  });
+            },
+            onError: function (error) {
+                alert("Payment error: " + error);
+            },
+            onClose: function () {
+                console.log("Widget is closed");
+            }
+        }
+    };
+    var checkout = new KhaltiCheckout(config);
+    document.getElementById("payment-button").onclick = function () {
+        checkout.show({ amount: 1000 }); // Amount in paisa (e.g., 1000 paisa = 10.00 units)
+    }
+</script>
+{% endblock %}
+

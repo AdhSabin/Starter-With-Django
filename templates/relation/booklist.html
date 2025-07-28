@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+    {% load static %}
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/navbar.css">
+    <title>{% block title %}Book List Page{% endblock %}</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+        <img src="{% static 'books.jpeg' %}" alt="Book" width="40" height="40" class="d-inline-block align-top mr-2">
+        <a class="navbar-brand" href="{% url 'library' %}">
+            <h4>Lumbini ICT Campus Library</h4>
+        </a>
+        <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+            <li class="nav-item mr-4"> 
+                <a class="nav-link" href="{% url 'addpublisher' %}">
+                    <h4>Add Publisher</h4>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'addauthor' %}">
+                    <h4>Add Author</h4>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'addbook' %}">
+                <h4>Add Book</h4>
+                  </a> 
+            </li> 
+             <li class="space-item">
+                  <a class="nav-link" href="{% url 'logout' %}"><h4>Logout</h4></a>
+              </li>
+        </ul>
+       {% if user.is_authenticated %}
+    <h5 class="text-white">Hello {{ user.username }}!</h5>
+    {% endif %}
+    </div>
+</nav>  <br>
+{% block content %}
+ <h1>Book List</h1>
+   <div class="container mt-4">
+    <div class="row">
+        {% for book in books %}
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">{{ book.title }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">
+                        By 
+                        {% for author in book.authors.all %}
+                            {{ author.first_name }} {{ author.last_name }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </h6>
+                    <p class="card-text"><strong>Publisher:</strong> {{ book.publisher.name }}</p>
+                    <a href="{% url 'book_detail' book.id %}" class="btn btn-primary mt-3">More Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div> </div> 
+{% endblock %}
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  </body>
+</html>
